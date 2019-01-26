@@ -5,5 +5,5 @@ package com.f8full.feedlocator.data.network
  */
 class FeedListAnswerRoot {
 
-    var feeds: List<FeedListAnswerFeedElement>? = null
+    var feeds: List<FeedEntry>? = null
 }

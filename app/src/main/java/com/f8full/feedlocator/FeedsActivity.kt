@@ -2,6 +2,8 @@ package com.f8full.feedlocator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.f8full.feedlocator.utils.InjectorUtils
 
@@ -26,10 +28,6 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        val modelFactory = InjectorUtils.provideFeedActivityViewModelFactory()
-
-        val model = ViewModelProviders.of(this, modelFactory)
     }
 
     /**
@@ -44,9 +42,18 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val modelFactory = InjectorUtils.provideFeedActivityViewModelFactory()
+
+        val model = ViewModelProviders.of(this, modelFactory).get(FeedActivityViewModel::class.java)
+
+        model.getFeedList.observe(this, Observer { feedEntryList ->
+            Log.d("FeedsActivity", "new data in model : ${feedEntryList.size}")
+
+            //TODO: rebuild map pins
+            // Add a marker in Sydney and move the camera
+            val sydney = LatLng(-34.0, 151.0)
+            mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        })
     }
 }

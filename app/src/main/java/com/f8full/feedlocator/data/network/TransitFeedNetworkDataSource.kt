@@ -19,14 +19,10 @@ class TransitFeedNetworkDataSource private constructor() {
     private val coroutineScopeIO = CoroutineScope(Dispatchers.IO)
 
     // LiveData storing the latest downloaded weather forecasts
-    private val downloadedFeedList: MutableLiveData<List<FeedListAnswerFeedElement>>
+    private val downloadedFeedList: MutableLiveData<List<FeedEntry>> = MutableLiveData<List<FeedEntry>>()
 
-    val currentTransitFeedList: LiveData<List<FeedListAnswerFeedElement>>
+    val currentTransitFeedList: LiveData<List<FeedEntry>>
         get() = downloadedFeedList
-
-    init {
-        downloadedFeedList = MutableLiveData<List<FeedListAnswerFeedElement>>()
-    }
 
     /**
      * Schedules a repeating job service which fetches the feed list.

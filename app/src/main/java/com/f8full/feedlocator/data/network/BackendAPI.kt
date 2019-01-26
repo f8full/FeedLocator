@@ -10,6 +10,6 @@ import retrofit2.http.Query
 interface BackendAPI {
 
     @GET("feeds")
-    fun feedList(@Query("all") all : Boolean = true, @Query("complete") complete : Boolean = true  ):
+    fun feedList(@Query("all") all : Boolean = true, @Query("detailed") detailed : Boolean = true  ):
             Call<FeedListAnswerRoot>
 }
