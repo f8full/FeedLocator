@@ -2,6 +2,8 @@ package com.f8full.feedlocator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProviders
+import com.f8full.feedlocator.utils.InjectorUtils
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,6 +12,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
+/**
+ * Created by F8Full on 2019-01-19. Copyright (c) -- All rights reserved
+ */
 class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
@@ -21,6 +26,10 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        val modelFactory = InjectorUtils.provideFeedActivityViewModelFactory()
+
+        val model = ViewModelProviders.of(this, modelFactory)
     }
 
     /**
