@@ -3,4 +3,13 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="color_pin_ca">#F44336</color>
+    <color name="color_pin_fr">#3F51B5</color>
+    <color name="color_pin_us">#E040FB</color>
+    <color name="color_pin_uk">#8BC34A</color>
+    <color name="color_pin_de">#FFC107</color>
+
+    <color name="color_pin_other">#00BCD4</color>
+
 </resources>

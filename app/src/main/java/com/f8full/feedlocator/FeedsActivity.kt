@@ -1,5 +1,10 @@
 package com.f8full.feedlocator
 
+import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +20,9 @@ import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.content.res.TypedArray
+import android.graphics.Color
+
 
 /**
  * Created by F8Full on 2019-01-19. Copyright (c) -- All rights reserved
@@ -25,7 +33,8 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val coroutineScopeIO = CoroutineScope(Dispatchers.IO)
 
-    private var descriptorMap: HashMap<Int, BitmapDescriptor> = HashMap()
+    //country code per precomputed tinted asset
+    private var descriptorMap: HashMap<String, BitmapDescriptor> = HashMap()
 
     private val model:FeedActivityViewModel
     get() {
@@ -34,6 +43,7 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
         return ViewModelProviders.of(this, modelFactory).get(FeedActivityViewModel::class.java)
     }
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feeds)
@@ -41,10 +51,48 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
         //launch bitmapDescriptors building
         //TODO: Observe on readyness and get map fragment and get map
         coroutineScopeIO.launch {
-            MapsInitializer.initialize(this@FeedsActivity)
-            //Create required descriptors from
-            descriptorMap[666] = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)
 
+            //First let's map RGB colors from resources to country code
+            // from https://stackoverflow.com/a/40137782/8958408
+            val countriesArrayOfArrays = resources.obtainTypedArray(R.array.countries_array_of_arrays)
+            val size = countriesArrayOfArrays.length()
+            val colorMap = HashMap<String, Int>(size) //color Int per country code, all from resource files
+            var countryTypedArray: TypedArray? = null
+            for (i in 0 until size) {
+                val id = countriesArrayOfArrays.getResourceId(i, -1)
+                if (id == -1) {
+                    throw IllegalStateException("R.array.countries_array_of_arrays is not valid")
+                }
+                countryTypedArray = resources.obtainTypedArray(id)
+
+                colorMap[countryTypedArray!!.getString(0)!!] =
+                        countryTypedArray.getColor(1, Color.MAGENTA)
+
+            }
+            countryTypedArray?.recycle()
+            countriesArrayOfArrays.recycle()
+
+            //Now we have tint color map, let's build BitmapDescriptor map
+            //Could be optimized by doing it directly when reading resources.
+            MapsInitializer.initialize(this@FeedsActivity)
+
+            val basePinBitmap = BitmapFactory.decodeStream(assets.open("pin.png"))
+            val btdrawable = BitmapDrawable(resources, basePinBitmap)
+            btdrawable.setBounds(0,0,btdrawable.intrinsicWidth, btdrawable.intrinsicHeight)
+
+            val bm = Bitmap.createBitmap(btdrawable.intrinsicWidth, btdrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bm)
+
+            //for each country code, grab color and tint drawable
+            colorMap.forEach {
+                btdrawable.setTint(it.value)
+                btdrawable.draw(canvas)
+
+                //save result for later use
+                descriptorMap[it.key] = BitmapDescriptorFactory.fromBitmap(bm)
+            }
+
+            //We're done creating assets, let's signal
             model.postMapAssetsReady(true)
         }
 
@@ -74,21 +122,24 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("FeedsActivity", "new data in model : ${feedEntryList.size}")
 
             feedEntryList.forEach {
-                mMap.addMarker(MarkerOptions()
-                    .icon(descriptorMap[666])
+
+                val options = MarkerOptions()
+                    .icon(descriptorMap["__"]) //other country 'country code'
                     .position(LatLngBounds(LatLng(
                         it.bounds!!.minLat!!,
                         it.bounds!!.minLon!!),
                         LatLng(it.bounds!!.maxLat!!,
                             it.bounds!!.maxLon!!)
-                ).center)
-                    .title("Name:${it.name}").snippet("City:${it.location}"))
-            }
-            //TODO: rebuild map pins
-            // Add a marker in Sydney and move the camera
-            //val sydney = LatLng(-34.0, 151.0)
+                    ).center)
+                    .title("Name:${it.name}").snippet("City:${it.location}")
 
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+                if (descriptorMap.containsKey(it.countryCode)){
+                    options.icon(descriptorMap[it.countryCode])
+                }
+
+                mMap.addMarker(options)
+
+            }
         })
     }
 }

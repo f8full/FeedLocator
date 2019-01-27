@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="countries_array_of_arrays">
+        <item>@array/canada</item>
+        <item>@array/france</item>
+        <item>@array/united_states</item>
+        <item>@array/united_kingdom</item>
+        <item>@array/germany</item>
+        <item>@array/other</item>
+    </array>
+    <array name="canada">
+        <item>CA</item>
+        <item>@color/color_pin_ca</item>
+    </array>
+    <array name="france">
+        <item>FR</item>
+        <item>@color/color_pin_fr</item>
+    </array>
+    <array name="united_states">
+        <item>US</item>
+        <item>@color/color_pin_us</item>
+    </array>
+    <array name="united_kingdom">
+        <item>GB</item>
+        <item>@color/color_pin_uk</item>
+    </array>
+    <array name="germany">
+        <item>DE</item>
+        <item>@color/color_pin_de</item>
+    </array>
+    <array name="other">
+        <item>__</item>
+        <item>@color/color_pin_other</item>
+    </array>
+</resources>
