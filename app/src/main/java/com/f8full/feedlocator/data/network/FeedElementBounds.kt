@@ -8,11 +8,11 @@ import com.google.gson.annotations.SerializedName
 class FeedElementBounds {
 
     @SerializedName("min_lat")
-    var minLat : Float? = null
+    var minLat : Double? = null
     @SerializedName("max_lat")
-    var maxLat : Float? = null
+    var maxLat : Double? = null
     @SerializedName("min_lon")
-    var minLon : Float? = null
+    var minLon : Double? = null
     @SerializedName("max_lon")
-    var maxLon : Float? = null
+    var maxLon : Double? = null
 }
