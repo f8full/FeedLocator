@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.res.TypedArray
 import android.graphics.Color
+import android.view.View
 
 
 /**
@@ -136,10 +137,10 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (descriptorMap.containsKey(it.countryCode)){
                     options.icon(descriptorMap[it.countryCode])
                 }
-
                 mMap.addMarker(options)
-
             }
+
+            findViewById<View>(R.id.progressBar).visibility = View.GONE
         })
     }
 }
