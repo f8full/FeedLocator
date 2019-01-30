@@ -49,8 +49,7 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feeds)
 
-        //launch bitmapDescriptors building
-        //TODO: Observe on readyness and get map fragment and get map
+        //launch bitmapDescriptor map building
         coroutineScopeIO.launch {
 
             //First let's map RGB colors from resources to country code
@@ -75,6 +74,7 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             //Now we have tint color map, let's build BitmapDescriptor map
             //Could be optimized by doing it directly when reading resources.
+            //First since we haven't got the map, we need to call this to access BitmapDescriptorFactory
             MapsInitializer.initialize(this@FeedsActivity)
 
             val basePinBitmap = BitmapFactory.decodeStream(assets.open("pin.png"))
@@ -119,6 +119,7 @@ class FeedsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        //start observing data in model
         model.getFeedList.observe(this, Observer { feedEntryList ->
             Log.d("FeedsActivity", "new data in model : ${feedEntryList.size}")
 
